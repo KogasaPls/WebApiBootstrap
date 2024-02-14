@@ -1,0 +1,9 @@
+<Project>
+    <PropertyGroup>
+        <OpenApiDocPath>$(SolutionDir)openapi.yaml</OpenApiDocPath>
+    </PropertyGroup>
+
+    <Target Name="RestoreDotNetTools" BeforeTargets="GenerateOpenApiDoc">
+        <Exec Command='dotnet tool restore --configfile "$(SolutionDir).config/dotnet-tools.json"'/>
+    </Target>
+</Project>

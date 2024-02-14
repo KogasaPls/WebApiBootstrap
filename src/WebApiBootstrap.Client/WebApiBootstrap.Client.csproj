@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all"/>
+        <PackageReference Include="IsExternalInit" Version="1.0.3" PrivateAssets="all"/>
+        <PackageReference Include="Refit" Version="7.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../WebApiBootstrap.Contracts/WebApiBootstrap.Contracts.csproj"/>
+    </ItemGroup>
+
+    <!-- Splitting a command into multiple lines requires a ^ on Windows and \ on Linux. Please find a better way. -->
+    <Choose>
+        <When Condition="'$(OS)' == 'Windows_NT'">
+            <PropertyGroup>
+                <Separator>%5E</Separator>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <Separator>%5C</Separator>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+    <Target Name="GenerateRefitInterface" BeforeTargets="BeforeBuild" Condition="'$(OpenApiDocPath)' != '' And Exists($(OpenApiDocPath))">
+        <Exec Command="dotnet refitter '$(OpenApiDocPath)' $(Separator)
+                        --output $(ProjectDir)RefitterInterface.g.cs $(Separator)
+                        --namespace 'WebApiBootstrap.Client' $(Separator)
+                        --interface-only $(Separator)
+                        --cancellation-tokens $(Separator)
+                        --additional-namespace 'WebApiBootstrap.Contracts' $(Separator)
+                        --multiple-interfaces ByEndpoint $(Separator)
+                        --no-logging $(Separator)
+                        --no-banner $(Separator)"
+        />
+    </Target>
+
+</Project>
